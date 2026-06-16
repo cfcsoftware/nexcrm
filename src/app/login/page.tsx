@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { loginAction } from "@/app/actions/auth";
-import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui";
+import { Button, Input, Card, CardContent } from "@/components/ui";
 
 function LoginContent() {
   const router = useRouter();
@@ -21,7 +21,6 @@ function LoginContent() {
     try {
       const res = await loginAction(email, password);
       if (res.success) {
-        // Redirect to dashboard or the original redirect path
         const redirectPath = searchParams.get("redirect") || "/dashboard";
         router.push(redirectPath);
         router.refresh();
@@ -36,18 +35,19 @@ function LoginContent() {
   };
 
   return (
-    <div className="flex-1 min-h-screen flex items-center justify-center bg-slate-50 px-4 py-12 relative overflow-hidden">
+    <div className="flex-1 min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4 py-12 relative overflow-hidden transition-colors duration-200">
       {/* Background decorations */}
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-60 pointer-events-none" />
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-60 pointer-events-none" />
       
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-400/10 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/10 dark:bg-blue-600/5 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-400/10 dark:bg-indigo-650/5 blur-[120px] pointer-events-none" />
 
-      <div className="w-full max-w-md z-10">
-        <div className="flex flex-col items-center justify-center mb-8 text-center">
-          <div className="flex items-center space-x-2 bg-blue-600 text-white p-2.5 rounded-xl shadow-md shadow-blue-500/20 mb-3">
+      <div className="w-full max-w-md z-10 space-y-6">
+        {/* Logo and App Title */}
+        <div className="flex flex-col items-center justify-center text-center">
+          <div className="flex items-center space-x-2.5 bg-blue-600 text-white p-3 rounded-2xl shadow-lg shadow-blue-500/20 dark:shadow-blue-500/10 mb-4 animate-bounce-slow">
             <svg
-              className="h-6 w-6"
+              className="h-7 w-7"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -56,26 +56,19 @@ function LoginContent() {
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">NexCRM</h1>
-          <p className="text-sm text-slate-500 mt-1">Manage your business leads, clients & tasks</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">NexCRM</h1>
         </div>
 
-        <Card className="shadow-xl shadow-slate-200/50 border border-slate-200/80">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-xl font-bold text-slate-900">Sign in to your account</CardTitle>
-            <CardDescription>
-              Enter your admin credentials below to log in.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <Card className="shadow-2xl shadow-slate-200/50 dark:shadow-black/40 border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
+          <CardContent className="p-8 space-y-4">
             <form onSubmit={handleLogin} className="space-y-4">
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg flex items-start space-x-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="bg-red-50 dark:bg-red-950/35 border border-red-200 dark:border-red-900/50 text-red-650 dark:text-red-400 text-sm p-3.5 rounded-lg flex items-start space-x-2 animate-in fade-in slide-in-from-top-1 duration-200">
                   <svg
                     className="h-5 w-5 shrink-0 mt-0.5"
                     fill="none"
@@ -95,7 +88,7 @@ function LoginContent() {
               )}
               
               <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700 block" htmlFor="email">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block" htmlFor="email">
                   Email Address
                 </label>
                 <Input
@@ -105,17 +98,15 @@ function LoginContent() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full"
+                  className="w-full bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                   disabled={loading}
                 />
               </div>
               
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-slate-700 block" htmlFor="password">
-                    Password
-                  </label>
-                </div>
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block" htmlFor="password">
+                  Password
+                </label>
                 <Input
                   id="password"
                   type="password"
@@ -123,15 +114,15 @@ function LoginContent() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full"
+                  className="w-full bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                   disabled={loading}
                 />
               </div>
 
-              <div className="pt-2">
+              <div className="pt-4">
                 <Button
                   type="submit"
-                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-blue-500/50"
+                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-blue-500/50 cursor-pointer"
                   disabled={loading}
                 >
                   {loading ? (
@@ -148,12 +139,6 @@ function LoginContent() {
                 </Button>
               </div>
             </form>
-
-            <div className="mt-6 border-t border-slate-100 pt-4 text-center">
-              <p className="text-xs text-slate-400">
-                Default Credentials: admin@crm.com / admin123
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>
@@ -163,7 +148,7 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <React.Suspense fallback={<div className="py-8 text-center text-slate-500">Loading portal...</div>}>
+    <React.Suspense fallback={<div className="py-8 text-center text-slate-550 dark:text-slate-450">Loading portal...</div>}>
       <LoginContent />
     </React.Suspense>
   );

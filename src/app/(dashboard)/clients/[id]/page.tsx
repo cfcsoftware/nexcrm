@@ -135,14 +135,14 @@ export default function ClientProfilePage({ params }: ClientProfileProps) {
                 {client.client_id}
               </span>
               {client.gst_number && (
-                <span className="text-[10px] font-bold text-slate-500 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">
+                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-1.5 py-0.5 rounded">
                   GST: {client.gst_number}
                 </span>
               )}
             </div>
-            <h1 className="text-2xl font-extrabold text-slate-950 tracking-tight">{client.company_name}</h1>
-            <p className="text-sm text-slate-500 flex items-center font-medium">
-              <User className="h-4 w-4 mr-1 text-slate-400" />
+            <h1 className="text-2xl font-extrabold text-slate-950 dark:text-slate-50 tracking-tight">{client.company_name}</h1>
+            <p className="text-sm text-slate-550 dark:text-slate-400 flex items-center font-medium">
+              <User className="h-4 w-4 mr-1 text-slate-400 dark:text-slate-500" />
               <span>Contact Person: {client.contact_person}</span>
             </p>
           </div>
@@ -154,29 +154,29 @@ export default function ClientProfilePage({ params }: ClientProfileProps) {
         <div className="lg:col-span-1 space-y-6">
           {/* Account Profile Card */}
           <Card className="shadow-sm border-slate-200">
-            <CardHeader className="border-b border-slate-50 py-4">
-              <CardTitle className="text-sm font-bold text-slate-800">Account Profile</CardTitle>
+            <CardHeader className="border-b border-slate-50 dark:border-slate-800/80 py-4">
+              <CardTitle className="text-sm font-bold text-slate-800 dark:text-slate-200">Account Profile</CardTitle>
               <CardDescription>Primary communication details</CardDescription>
             </CardHeader>
             <CardContent className="p-4 space-y-4 text-sm">
               <div className="space-y-0.5">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Phone Number</p>
-                <a href={`tel:${client.mobile}`} className="font-semibold text-slate-700 hover:text-blue-600 flex items-center mt-1">
-                  <Phone className="h-4 w-4 mr-2 text-slate-400 shrink-0" />
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Phone Number</p>
+                <a href={`tel:${client.mobile}`} className="font-semibold text-slate-700 dark:text-slate-250 hover:text-blue-600 dark:hover:text-blue-400 flex items-center mt-1">
+                  <Phone className="h-4 w-4 mr-2 text-slate-400 dark:text-slate-500 shrink-0" />
                   {client.mobile}
                 </a>
               </div>
               <div className="space-y-0.5">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Email Address</p>
-                <a href={`mailto:${client.email}`} className="font-semibold text-slate-700 hover:text-blue-600 flex items-center mt-1">
-                  <Mail className="h-4 w-4 mr-2 text-slate-400 shrink-0" />
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Email Address</p>
+                <a href={`mailto:${client.email}`} className="font-semibold text-slate-700 dark:text-slate-250 hover:text-blue-600 dark:hover:text-blue-400 flex items-center mt-1">
+                  <Mail className="h-4 w-4 mr-2 text-slate-400 dark:text-slate-500 shrink-0" />
                   {client.email}
                 </a>
               </div>
               <div className="space-y-0.5">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Corporate Office Address</p>
-                <p className="font-semibold text-slate-700 flex items-start mt-1">
-                  <MapPin className="h-4 w-4 mr-2 text-slate-400 shrink-0 mt-0.5" />
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Corporate Office Address</p>
+                <p className="font-semibold text-slate-700 dark:text-slate-250 flex items-start mt-1">
+                  <MapPin className="h-4 w-4 mr-2 text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
                   <span>
                     {client.address ? `${client.address}, ` : ""}
                     {client.city ? `${client.city}, ` : ""}
@@ -189,8 +189,8 @@ export default function ClientProfilePage({ params }: ClientProfileProps) {
 
           {/* Account Notes text area (Persistent and editable notes) */}
           <Card className="shadow-sm border-slate-200">
-            <CardHeader className="border-b border-slate-50 py-4">
-              <CardTitle className="text-sm font-bold text-slate-800">Client Log & History</CardTitle>
+            <CardHeader className="border-b border-slate-50 dark:border-slate-800/80 py-4">
+              <CardTitle className="text-sm font-bold text-slate-800 dark:text-slate-200">Client Log & History</CardTitle>
               <CardDescription>Persistent background timeline</CardDescription>
             </CardHeader>
             <CardContent className="p-4 space-y-3.5">
@@ -198,7 +198,7 @@ export default function ClientProfilePage({ params }: ClientProfileProps) {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Log business updates, context history, or project details..."
-                className="w-full min-h-[160px] rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50"
+                className="w-full min-h-[160px] rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50"
                 disabled={saveNotesLoading}
               />
               
@@ -258,10 +258,10 @@ export default function ClientProfilePage({ params }: ClientProfileProps) {
                   <TableBody>
                     {leads.map((lead: any) => (
                       <TableRow key={lead.id}>
-                        <TableCell className="align-middle font-mono font-bold text-xs text-slate-400">
+                        <TableCell className="align-middle font-mono font-bold text-xs text-slate-450 dark:text-slate-500">
                           {lead.lead_id}
                         </TableCell>
-                        <TableCell className="align-middle font-semibold text-slate-900">
+                        <TableCell className="align-middle font-semibold text-slate-900 dark:text-slate-100">
                           {lead.contact_person}
                         </TableCell>
                         <TableCell className="align-middle">
@@ -274,7 +274,7 @@ export default function ClientProfilePage({ params }: ClientProfileProps) {
                         </TableCell>
                         <TableCell className="align-middle text-right">
                           <Link href={`/leads?id=${lead.id}`}>
-                            <button className="text-xs text-blue-600 hover:underline font-semibold cursor-pointer">
+                            <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
                               View details
                             </button>
                           </Link>
@@ -288,10 +288,10 @@ export default function ClientProfilePage({ params }: ClientProfileProps) {
           </Card>
 
           {/* Related Proposals Section */}
-          <Card className="shadow-sm border-slate-200 bg-white overflow-hidden">
-            <CardHeader className="border-b border-slate-100 py-4 flex flex-row items-center justify-between">
+          <Card className="shadow-sm border-slate-200 bg-white dark:bg-slate-900 overflow-hidden">
+            <CardHeader className="border-b border-slate-100 dark:border-slate-800/80 py-4 flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-sm font-bold text-slate-800">Proposals & Values</CardTitle>
+                <CardTitle className="text-sm font-bold text-slate-800 dark:text-slate-200">Proposals & Values</CardTitle>
                 <CardDescription>Proposals generated for this account</CardDescription>
               </div>
               <Badge variant="secondary" className="font-bold">
@@ -318,13 +318,13 @@ export default function ClientProfilePage({ params }: ClientProfileProps) {
                   <TableBody>
                     {proposals.map((prop: any) => (
                       <TableRow key={prop.id}>
-                        <TableCell className="align-middle font-mono font-bold text-xs text-slate-450">
+                        <TableCell className="align-middle font-mono font-bold text-xs text-slate-450 dark:text-slate-500">
                           {prop.proposal_number}
                         </TableCell>
-                        <TableCell className="align-middle font-semibold text-slate-900">
+                        <TableCell className="align-middle font-semibold text-slate-900 dark:text-slate-100">
                           {prop.title}
                         </TableCell>
-                        <TableCell className="align-middle font-bold text-slate-850">
+                        <TableCell className="align-middle font-bold text-slate-850 dark:text-slate-200">
                           ${prop.value?.toLocaleString()}
                         </TableCell>
                         <TableCell className="align-middle text-xs">
@@ -347,7 +347,7 @@ export default function ClientProfilePage({ params }: ClientProfileProps) {
                         </TableCell>
                         <TableCell className="align-middle text-right">
                           <Link href={`/proposals?id=${prop.id}`}>
-                            <button className="text-xs text-blue-600 hover:underline font-semibold cursor-pointer">
+                            <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
                               Open contract
                             </button>
                           </Link>

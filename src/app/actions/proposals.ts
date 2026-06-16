@@ -7,7 +7,7 @@ export async function getProposalsAction(search = "", statusFilter = "all") {
   try {
     let query = supabaseAdmin
       .from("proposals")
-      .select("*, clients(company_name), leads(company_name)", { count: "exact" });
+      .select("*, clients(*), leads(*)", { count: "exact" });
 
     // 1. Apply Search (searches title or proposal number)
     if (search.trim()) {

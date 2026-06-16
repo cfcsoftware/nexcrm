@@ -195,8 +195,8 @@ function TasksContent() {
       {/* Header and Statistics */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Task Manager</h1>
-          <p className="text-sm text-slate-500 mt-1">Organize your daily activities and log action items.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">Task Manager</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Organize your daily activities and log action items.</p>
         </div>
         <Button onClick={handleOpenCreate} className="flex items-center space-x-1">
           <Plus className="h-4 w-4" />
@@ -206,37 +206,37 @@ function TasksContent() {
 
       {/* Task statistics */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="bg-slate-50/50 border-slate-200/60 shadow-sm">
+        <Card className="bg-slate-50/50 dark:bg-slate-900/40 border-slate-200/60 dark:border-slate-800 shadow-sm">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Tasks</p>
-              <p className="text-xl font-bold text-slate-950 mt-1">{stats.total}</p>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-450 uppercase tracking-wide">Total Tasks</p>
+              <p className="text-xl font-bold text-slate-950 dark:text-slate-50 mt-1">{stats.total}</p>
             </div>
-            <div className="bg-white p-2 rounded-lg border border-slate-100 text-slate-700">
+            <div className="bg-white dark:bg-slate-950 p-2 rounded-lg border border-slate-100 dark:border-slate-850 text-slate-700 dark:text-slate-300">
               <ListTodo className="h-5 w-5 shrink-0" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-orange-50/30 border-orange-100/60 shadow-sm">
+        <Card className="bg-orange-50/30 dark:bg-orange-950/20 border-orange-100/60 dark:border-orange-900/30 shadow-sm">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold text-orange-600 uppercase tracking-wide">Pending Tasks</p>
-              <p className="text-xl font-bold text-orange-950 mt-1">{stats.pending}</p>
+              <p className="text-xs font-semibold text-orange-655 dark:text-orange-400 uppercase tracking-wide">Pending Tasks</p>
+              <p className="text-xl font-bold text-orange-950 dark:text-slate-50 mt-1">{stats.pending}</p>
             </div>
-            <div className="bg-white p-2 rounded-lg border border-orange-100 text-orange-600">
+            <div className="bg-white dark:bg-slate-950 p-2 rounded-lg border border-orange-100 dark:border-orange-900/40 text-orange-600">
               <Clock className="h-5 w-5 shrink-0" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-green-50/30 border-green-100/60 shadow-sm">
+        <Card className="bg-green-50/30 dark:bg-green-950/20 border-green-100/60 dark:border-green-900/30 shadow-sm">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold text-green-600 uppercase tracking-wide">Completed Tasks</p>
-              <p className="text-xl font-bold text-green-950 mt-1">{stats.completed}</p>
+              <p className="text-xs font-semibold text-green-655 dark:text-green-400 uppercase tracking-wide">Completed Tasks</p>
+              <p className="text-xl font-bold text-green-950 dark:text-slate-50 mt-1">{stats.completed}</p>
             </div>
-            <div className="bg-white p-2 rounded-lg border border-green-100 text-green-600">
+            <div className="bg-white dark:bg-slate-950 p-2 rounded-lg border border-green-100 dark:border-green-900/40 text-green-600">
               <CheckCircle2 className="h-5 w-5 shrink-0" />
             </div>
           </CardContent>
@@ -326,7 +326,7 @@ function TasksContent() {
                     <TableCell className="align-middle">
                       <div className="flex flex-col">
                         <span
-                          className={`font-semibold text-slate-900 cursor-pointer hover:text-blue-600 ${
+                          className={`font-semibold text-slate-900 dark:text-slate-100 cursor-pointer hover:text-blue-600 ${
                             task.status === "Completed" ? "line-through text-slate-400" : ""
                           }`}
                           onClick={() => handleViewTask(task)}
@@ -334,15 +334,15 @@ function TasksContent() {
                           {task.title}
                         </span>
                         {task.description && (
-                          <span className="text-xs text-slate-400 line-clamp-1 max-w-sm mt-0.5">
+                          <span className="text-xs text-slate-400 dark:text-slate-500 line-clamp-1 max-w-sm mt-0.5">
                             {task.description}
                           </span>
                         )}
                       </div>
                     </TableCell>
                     <TableCell className="align-middle">
-                      <span className="text-xs font-semibold text-slate-600 flex items-center">
-                        <Calendar className="h-3.5 w-3.5 mr-1 text-slate-400 shrink-0" />
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center">
+                        <Calendar className="h-3.5 w-3.5 mr-1 text-slate-400 dark:text-slate-500 shrink-0" />
                         {task.due_date ? new Date(task.due_date).toLocaleDateString() : "No Date"}
                       </span>
                     </TableCell>
@@ -421,7 +421,7 @@ function TasksContent() {
           /* VIEW VIEW */
           <div className="space-y-4">
             <div className="space-y-1">
-              <h3 className="text-base font-bold text-slate-900">{selectedTask?.title}</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-50">{selectedTask?.title}</h3>
               <div className="flex flex-wrap gap-2 pt-1.5">
                 <Badge variant={selectedTask?.priority === "High" ? "destructive" : selectedTask?.priority === "Medium" ? "warning" : "secondary"}>
                   Priority: {selectedTask?.priority}
@@ -432,22 +432,22 @@ function TasksContent() {
               </div>
             </div>
 
-            <div className="border-t border-slate-100 pt-3">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Due Date</p>
-              <p className="text-sm font-semibold text-slate-700 mt-1 flex items-center">
-                <Calendar className="h-4 w-4 mr-1 text-slate-400" />
+            <div className="border-t border-slate-100 dark:border-slate-800 pt-3">
+              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Due Date</p>
+              <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 mt-1 flex items-center">
+                <Calendar className="h-4 w-4 mr-1 text-slate-400 dark:text-slate-500" />
                 {selectedTask?.due_date ? new Date(selectedTask.due_date).toLocaleDateString() : "No due date specified"}
               </p>
             </div>
 
-            <div className="border-t border-slate-100 pt-3">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Description</p>
-              <div className="text-sm text-slate-600 mt-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200/50 whitespace-pre-wrap min-h-[80px]">
+            <div className="border-t border-slate-100 dark:border-slate-800 pt-3">
+              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Description</p>
+              <div className="text-sm text-slate-655 dark:text-slate-300 mt-1.5 bg-slate-50 dark:bg-slate-950/40 p-3 rounded-lg border border-slate-200/50 dark:border-slate-800/80 whitespace-pre-wrap min-h-[80px]">
                 {selectedTask?.description || "No description provided."}
               </div>
             </div>
 
-            <div className="flex justify-end space-x-2 pt-4 border-t border-slate-100">
+            <div className="flex justify-end space-x-2 pt-4 border-t border-slate-100 dark:border-slate-800">
               <Button variant="outline" onClick={() => setDialogOpen(false)}>
                 Close
               </Button>
@@ -465,14 +465,14 @@ function TasksContent() {
           /* CREATE / EDIT FORM VIEW */
           <form onSubmit={handleSubmit} className="space-y-4">
             {formError && (
-              <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg flex items-start space-x-2">
+              <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 text-red-600 dark:text-red-400 text-sm p-3 rounded-lg flex items-start space-x-2">
                 <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
                 <span>{formError}</span>
               </div>
             )}
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700 block" htmlFor="title">
+              <label className="text-sm font-medium text-slate-755 dark:text-slate-305 block" htmlFor="title">
                 Task Title *
               </label>
               <Input
@@ -486,7 +486,7 @@ function TasksContent() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700 block" htmlFor="desc">
+              <label className="text-sm font-medium text-slate-755 dark:text-slate-305 block" htmlFor="desc">
                 Description
               </label>
               <textarea
@@ -494,14 +494,14 @@ function TasksContent() {
                 value={formDesc}
                 onChange={(e) => setFormDesc(e.target.value)}
                 placeholder="Add optional task details..."
-                className="w-full min-h-[100px] rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent disabled:opacity-50"
+                className="w-full min-h-[100px] rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent disabled:opacity-50"
                 disabled={formSubmitting}
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-700 block" htmlFor="due_date">
+                <label className="text-sm font-medium text-slate-755 dark:text-slate-305 block" htmlFor="due_date">
                   Due Date
                 </label>
                 <Input

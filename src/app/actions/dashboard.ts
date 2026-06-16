@@ -59,6 +59,18 @@ export async function getDashboardData() {
       { name: "Completed", value: tasksByStatus?.filter(t => t.status === "Completed").length || 0 },
     ];
 
+    // 3.5 Fetch proposals by status for Proposals Chart
+    const { data: proposalsByStatus } = await supabaseAdmin
+      .from("proposals")
+      .select("status, value");
+
+    const proposalStatuses = ["Draft", "Sent", "Accepted", "Rejected"];
+    const proposalChartData = proposalStatuses.map(status => {
+      const filtered = proposalsByStatus?.filter(p => p.status === status) || [];
+      const totalValue = filtered.reduce((acc, curr) => acc + Number(curr.value || 0), 0);
+      return { name: status, value: totalValue, count: filtered.length };
+    });
+
     // 4. Fetch recent leads (limit 5)
     const { data: recentLeads } = await supabaseAdmin
       .from("leads")
@@ -145,6 +157,7 @@ export async function getDashboardData() {
       },
       pipelineData,
       taskChartData,
+      proposalChartData,
       recentLeads: recentLeads || [],
       todaysTasks: todaysTasks || [],
       activities: finalActivities,

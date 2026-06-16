@@ -233,8 +233,8 @@ function ProposalsContent() {
       {/* Header Panel */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Proposals Dashboard</h1>
-          <p className="text-sm text-slate-500 mt-1">Manage, draft, and track sent contracts value.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">Proposals Dashboard</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage, draft, and track sent contracts value.</p>
         </div>
         <Button onClick={handleOpenCreate} className="flex items-center space-x-1">
           <Plus className="h-4 w-4" />
@@ -244,27 +244,27 @@ function ProposalsContent() {
 
       {/* Proposals statistics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-slate-50/50 border-slate-200/60 shadow-sm">
+        <Card className="bg-slate-50/50 dark:bg-slate-900/40 border-slate-200/60 dark:border-slate-800 shadow-sm">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Proposals</p>
-              <p className="text-xl font-bold text-slate-950 mt-1">{stats.total}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">${stats.totalValue.toLocaleString()}</p>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-450 uppercase tracking-wide">Total Proposals</p>
+              <p className="text-xl font-bold text-slate-955 dark:text-slate-50 mt-1">{stats.total}</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">${stats.totalValue.toLocaleString()}</p>
             </div>
-            <div className="bg-white p-2 rounded-lg border border-slate-100 text-slate-700">
+            <div className="bg-white dark:bg-slate-950 p-2 rounded-lg border border-slate-100 dark:border-slate-850 text-slate-700 dark:text-slate-300">
               <FileText className="h-5 w-5 shrink-0" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-green-50/30 border-green-100/60 shadow-sm">
+        <Card className="bg-green-50/30 dark:bg-green-950/20 border-green-100/60 dark:border-green-900/30 shadow-sm">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold text-green-600 uppercase tracking-wide">Accepted Proposals</p>
-              <p className="text-xl font-bold text-green-950 mt-1">{stats.accepted}</p>
-              <p className="text-[10px] text-green-600 mt-0.5">${stats.acceptedValue.toLocaleString()}</p>
+              <p className="text-xs font-semibold text-green-655 dark:text-green-400 uppercase tracking-wide">Accepted Proposals</p>
+              <p className="text-xl font-bold text-green-955 dark:text-slate-50 mt-1">{stats.accepted}</p>
+              <p className="text-[10px] text-green-600 dark:text-green-400 mt-0.5">${stats.acceptedValue.toLocaleString()}</p>
             </div>
-            <div className="bg-white p-2 rounded-lg border border-green-100 text-green-600">
+            <div className="bg-white dark:bg-slate-950 p-2 rounded-lg border border-green-100 dark:border-green-900/40 text-green-600">
               <CheckCircle className="h-5 w-5 shrink-0" />
             </div>
           </CardContent>
@@ -363,25 +363,25 @@ function ProposalsContent() {
                     <TableCell className="align-middle">
                       <div className="flex flex-col">
                         <span
-                          className="font-semibold text-slate-950 cursor-pointer hover:text-blue-600"
+                          className="font-semibold text-slate-950 dark:text-slate-100 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
                           onClick={() => handleViewProposal(prop)}
                         >
                           {prop.title}
                         </span>
                         {prop.leads && (
-                          <span className="text-[10px] text-slate-400 mt-0.5">
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
                             Lead Ref: {prop.leads.company_name}
                           </span>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="align-middle font-semibold text-slate-700">
+                    <TableCell className="align-middle font-semibold text-slate-700 dark:text-slate-300">
                       {prop.clients?.company_name || "Unassigned"}
                     </TableCell>
-                    <TableCell className="align-middle font-bold text-slate-900">
+                    <TableCell className="align-middle font-bold text-slate-900 dark:text-slate-100">
                       ${prop.value?.toLocaleString()}
                     </TableCell>
-                    <TableCell className="align-middle text-xs">
+                    <TableCell className="align-middle text-xs text-slate-600 dark:text-slate-400">
                       {prop.proposal_date ? new Date(prop.proposal_date).toLocaleDateString() : "No Date"}
                     </TableCell>
                     <TableCell className="align-middle">
@@ -443,79 +443,219 @@ function ProposalsContent() {
             ? "Edit Proposal Details"
             : "Proposal Document Details"
         }
+        className={dialogMode === "view" ? "max-w-4xl" : "max-w-lg"}
       >
         {dialogMode === "view" ? (
           /* VIEW VIEW */
-          <div className="space-y-4">
-            <div className="space-y-1">
-              <span className="font-mono font-bold text-xs text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded">
-                {selectedProposal?.proposal_number}
-              </span>
-              <h3 className="text-base font-bold text-slate-900 mt-2">{selectedProposal?.title}</h3>
-              <div className="flex flex-wrap gap-2 pt-1.5">
+          <div className="space-y-6">
+            {/* Scoped CSS styles for A4 print optimization */}
+            <style dangerouslySetInnerHTML={{ __html: `
+              @media print {
+                /* Hide everything except the printable invoice */
+                body * {
+                  visibility: hidden;
+                }
+                #printable-invoice, #printable-invoice * {
+                  visibility: visible;
+                }
+                #printable-invoice {
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  width: 100%;
+                  background: white !important;
+                  color: black !important;
+                  box-shadow: none !important;
+                  border: none !important;
+                  padding: 0px !important;
+                  margin: 0px !important;
+                }
+                @page {
+                  size: A4 portrait;
+                  margin: 20mm;
+                }
+              }
+            `}} />
+
+            {/* Printable Invoice Container */}
+            <div 
+              id="printable-invoice" 
+              className="bg-white text-slate-800 p-8 rounded-xl border border-slate-200 shadow-sm font-sans space-y-8"
+            >
+              {/* Header section */}
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                {/* Logo & Company info */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-base font-extrabold shadow-sm">
+                      N
+                    </div>
+                    <span className="text-xl font-extrabold text-slate-900 tracking-tight">NexCRM</span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 space-y-0.5 leading-normal">
+                    <p className="font-bold text-slate-700 text-xs">NexCRM Solutions Ltd.</p>
+                    <p>123 Enterprise Way, Suite 500</p>
+                    <p>Tech City, CA 94016</p>
+                  </div>
+                </div>
+
+                {/* Mid section contact details */}
+                <div className="text-[11px] text-slate-500 space-y-1 pt-2 sm:pt-8">
+                  <p><span className="font-semibold text-slate-700">Phone:</span> +1 (555) 019-2834</p>
+                  <p><span className="font-semibold text-slate-700">Email:</span> billing@nexcrm.com</p>
+                  <p><span className="font-semibold text-slate-700">Website:</span> www.nexcrm.com</p>
+                </div>
+
+                {/* Doc Type Title */}
+                <div>
+                  <h1 className="text-4xl font-black text-slate-800 tracking-tight uppercase">PROPOSAL</h1>
+                </div>
+              </div>
+
+              {/* Bill To / Ship To / Details Panel (Full width gray box) */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 border border-slate-100/80 p-5 rounded-lg text-[11px] text-slate-600">
+                <div className="space-y-1.5">
+                  <h3 className="font-bold text-slate-900 uppercase tracking-wider text-[10px] border-b border-slate-200/60 pb-1 w-2/3">Bill to</h3>
+                  <p className="font-bold text-slate-800 text-xs">{selectedProposal?.clients?.contact_person}</p>
+                  <p className="font-medium text-slate-700">{selectedProposal?.clients?.company_name}</p>
+                  <p className="whitespace-pre-line leading-relaxed">{selectedProposal?.clients?.address || "123 Client Lane"}</p>
+                  <p>{selectedProposal?.clients?.city || ""}, {selectedProposal?.clients?.state || ""}</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <h3 className="font-bold text-slate-900 uppercase tracking-wider text-[10px] border-b border-slate-200/60 pb-1 w-2/3">Ship to</h3>
+                  <p className="font-bold text-slate-800 text-xs">{selectedProposal?.clients?.contact_person}</p>
+                  <p className="font-medium text-slate-700">{selectedProposal?.clients?.company_name}</p>
+                  <p className="whitespace-pre-line leading-relaxed">{selectedProposal?.clients?.address || "123 Client Lane"}</p>
+                  <p>{selectedProposal?.clients?.city || ""}, {selectedProposal?.clients?.state || ""}</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <h3 className="font-bold text-slate-900 uppercase tracking-wider text-[10px] border-b border-slate-200/60 pb-1 w-2/3">Details</h3>
+                  <p><span className="font-bold text-slate-700">Proposal #:</span> <span className="font-mono font-semibold">{selectedProposal?.proposal_number}</span></p>
+                  <p><span className="font-bold text-slate-700">Proposal Date:</span> {selectedProposal?.proposal_date ? new Date(selectedProposal.proposal_date).toLocaleDateString() : "N/A"}</p>
+                  <p><span className="font-bold text-slate-700">Terms:</span> Net 30</p>
+                  <p><span className="font-bold text-slate-700">Due Date:</span> {selectedProposal?.expiry_date ? new Date(selectedProposal.expiry_date).toLocaleDateString() : "N/A"}</p>
+                </div>
+              </div>
+
+              {/* Items Table */}
+              <div className="overflow-x-auto pt-2">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-300 text-slate-800 font-bold uppercase tracking-wider text-[10px]">
+                      <th className="py-3 w-1/4">Product/ service</th>
+                      <th className="py-3 w-5/12">Description</th>
+                      <th className="py-3 text-center w-1/12">Quantity/ hrs</th>
+                      <th className="py-3 text-right w-2/12">Rate</th>
+                      <th className="py-3 text-right w-2/12">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {/* Primary Line Item */}
+                    <tr className="text-slate-700 align-top">
+                      <td className="py-4 font-bold text-slate-900">{selectedProposal?.title}</td>
+                      <td className="py-4 pr-6 leading-relaxed whitespace-pre-wrap">{selectedProposal?.description || "Scope of professional work, deliverables, and service provisions."}</td>
+                      <td className="py-4 text-center font-medium">1</td>
+                      <td className="py-4 text-right font-medium">${selectedProposal?.value?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      <td className="py-4 text-right font-bold text-slate-900">${selectedProposal?.value?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    </tr>
+
+                    {/* Placeholder rows matching the attached image */}
+                    <tr className="text-slate-400 align-top">
+                      <td className="py-4">Standard Support & Maintenance</td>
+                      <td className="py-4 pr-6 leading-relaxed">First 30 days of post-handover support included</td>
+                      <td className="py-4 text-center">0</td>
+                      <td className="py-4 text-right">$0.00</td>
+                      <td className="py-4 text-right">$0.00</td>
+                    </tr>
+                    <tr className="text-slate-400 align-top">
+                      <td className="py-4">Quality Assurance Testing</td>
+                      <td className="py-4 pr-6 leading-relaxed">Cross-browser and mobile verification</td>
+                      <td className="py-4 text-center">0</td>
+                      <td className="py-4 text-right">$0.00</td>
+                      <td className="py-4 text-right">$0.00</td>
+                    </tr>
+                    <tr className="text-slate-400 align-top">
+                      <td className="py-4">Deployment & Integration</td>
+                      <td className="py-4 pr-6 leading-relaxed">Cloud setup and production deployment handoff</td>
+                      <td className="py-4 text-center">0</td>
+                      <td className="py-4 text-right">$0.00</td>
+                      <td className="py-4 text-right">$0.00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Bottom Message and Totals grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-slate-200/80">
+                <div className="space-y-2">
+                  <h4 className="font-bold text-slate-900 uppercase tracking-wider text-[10px]">Customer message</h4>
+                  <div className="text-[11px] text-slate-600 space-y-1 leading-relaxed">
+                    <p>Hello!</p>
+                    <p>Thank you for considering our proposal. Please review the listed scope of work and deliverables. If you have any questions or require modifications, please contact us.</p>
+                    <p>Thanks!</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2.5 text-right w-full sm:w-4/5 sm:ml-auto text-xs">
+                  <div className="flex justify-between text-slate-600">
+                    <span>Subtotal</span>
+                    <span className="font-semibold text-slate-800">${selectedProposal?.value?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Sales tax (0.0%)</span>
+                    <span>$0.00</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Shipping</span>
+                    <span>$0.00</span>
+                  </div>
+                  <div className="border-b border-slate-200 my-1" />
+                  <div className="flex justify-between font-extrabold text-sm text-slate-900 pt-1">
+                    <span>Total</span>
+                    <span className="text-base font-black text-blue-600">${selectedProposal?.value?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Actions Footer */}
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+              <div className="flex items-center space-x-2">
                 <Badge variant={selectedProposal?.status === "Accepted" ? "success" : selectedProposal?.status === "Rejected" ? "destructive" : selectedProposal?.status === "Sent" ? "info" : "secondary"}>
                   Status: {selectedProposal?.status}
                 </Badge>
-                <Badge variant="outline" className="font-bold text-slate-800">
-                  Value: ${selectedProposal?.value?.toLocaleString()}
-                </Badge>
+                {selectedProposal?.leads && (
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                    Lead Ref: {selectedProposal.leads.company_name}
+                  </span>
+                )}
               </div>
-            </div>
-
-            <div className="border-t border-slate-100 pt-3 space-y-2.5 text-sm">
-              <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Client Company</p>
-                <p className="font-semibold text-slate-700 mt-0.5">
-                  {selectedProposal?.clients?.company_name || "Unassigned"}
-                </p>
+              <div className="flex space-x-2 w-full sm:w-auto justify-end">
+                <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                  Close
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 cursor-pointer flex items-center space-x-1" 
+                  onClick={() => window.print()}
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                  </svg>
+                  <span>Print Document</span>
+                </Button>
+                <Button
+                  onClick={() => {
+                    setDialogOpen(false);
+                    handleOpenEdit(selectedProposal);
+                  }}
+                  className="cursor-pointer"
+                >
+                  Edit Proposal
+                </Button>
               </div>
-
-              {selectedProposal?.leads && (
-                <div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Related Lead</p>
-                  <p className="font-semibold text-slate-700 mt-0.5">
-                    {selectedProposal?.leads?.company_name} ({selectedProposal?.leads?.contact_person})
-                  </p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Proposal Date</p>
-                  <p className="font-semibold text-slate-700 mt-0.5 flex items-center">
-                    <Calendar className="h-4 w-4 mr-1 text-slate-400" />
-                    {selectedProposal?.proposal_date ? new Date(selectedProposal.proposal_date).toLocaleDateString() : "No Date"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Expiry Date</p>
-                  <p className="font-semibold text-slate-700 mt-0.5 flex items-center">
-                    <Calendar className="h-4 w-4 mr-1 text-slate-400" />
-                    {selectedProposal?.expiry_date ? new Date(selectedProposal.expiry_date).toLocaleDateString() : "No Date"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-slate-100 pt-3">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Scope of Work Description</p>
-              <div className="text-sm text-slate-600 mt-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200/50 whitespace-pre-wrap min-h-[100px]">
-                {selectedProposal?.description || "No description provided."}
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-2 pt-4 border-t border-slate-100">
-              <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                Close
-              </Button>
-              <Button
-                onClick={() => {
-                  setDialogOpen(false);
-                  handleOpenEdit(selectedProposal);
-                }}
-              >
-                Edit Proposal
-              </Button>
             </div>
           </div>
         ) : (

@@ -151,8 +151,8 @@ export default function ClientsPage() {
       {/* Header Panel */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Clients Directory</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">Clients Directory</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Browse and manage accounts, or view detailed history profiles.
           </p>
         </div>
@@ -212,14 +212,14 @@ export default function ClientsPage() {
                     <TableCell className="align-middle font-mono font-bold text-xs text-slate-500">
                       {client.client_id}
                     </TableCell>
-                    <TableCell className="align-middle font-bold text-slate-900">
-                      <Link href={`/clients/${client.id}`} className="hover:text-blue-650 hover:underline">
+                    <TableCell className="align-middle font-bold text-slate-900 dark:text-slate-100">
+                      <Link href={`/clients/${client.id}`} className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline">
                         {client.company_name}
                       </Link>
                     </TableCell>
                     <TableCell className="align-middle">{client.contact_person}</TableCell>
                     <TableCell className="align-middle text-xs">{client.mobile}</TableCell>
-                    <TableCell className="align-middle text-xs font-medium text-slate-650">{client.email}</TableCell>
+                    <TableCell className="align-middle text-xs font-medium text-slate-600 dark:text-slate-400">{client.email}</TableCell>
                     <TableCell className="align-middle text-right">
                       <div className="flex items-center justify-end space-x-1">
                         <Link href={`/clients/${client.id}`}>

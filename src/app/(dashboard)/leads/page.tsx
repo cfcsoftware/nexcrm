@@ -266,19 +266,19 @@ function LeadsContent() {
       {/* Header Panel */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Leads Pipeline</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">Leads Pipeline</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Track potential opportunities and move them through pipeline stages.
           </p>
         </div>
         
         {/* Toggle and New Lead Buttons */}
         <div className="flex items-center space-x-3">
-          <div className="bg-slate-100 p-0.5 rounded-lg flex border border-slate-200 shrink-0">
+          <div className="bg-slate-100 dark:bg-slate-900 p-0.5 rounded-lg flex border border-slate-200 dark:border-slate-800 shrink-0">
             <button
               onClick={() => setViewMode("kanban")}
               className={`p-1.5 rounded-md text-xs font-semibold flex items-center space-x-1 cursor-pointer transition-all ${
-                viewMode === "kanban" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"
+                viewMode === "kanban" ? "bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-205"
               }`}
               title="Kanban Board"
             >
@@ -288,7 +288,7 @@ function LeadsContent() {
             <button
               onClick={() => setViewMode("table")}
               className={`p-1.5 rounded-md text-xs font-semibold flex items-center space-x-1 cursor-pointer transition-all ${
-                viewMode === "table" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"
+                viewMode === "table" ? "bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-205"
               }`}
               title="Table View"
             >
@@ -447,16 +447,16 @@ function LeadsContent() {
                 onDragOver={(e) => handleDragOver(e, stage)}
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, stage)}
-                className={`flex flex-col bg-slate-100 rounded-xl p-3 border-2 min-h-[500px] max-h-[80vh] w-full shrink-0 transition-all ${
-                  isDraggingOver ? "border-dashed border-blue-500 bg-blue-50/30 shadow-inner" : "border-transparent"
+                className={`flex flex-col bg-slate-100 dark:bg-slate-900/60 rounded-xl p-3 border-2 min-h-[500px] max-h-[80vh] w-full shrink-0 transition-all ${
+                  isDraggingOver ? "border-dashed border-blue-500 bg-blue-500/10 dark:bg-blue-950/20 shadow-inner" : "border-transparent"
                 }`}
               >
                 {/* Column Header */}
                 <div className="flex items-center justify-between mb-3.5 px-1 shrink-0">
-                  <span className="text-xs font-bold text-slate-700 tracking-wide uppercase truncate mr-1.5">
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 tracking-wide uppercase truncate mr-1.5">
                     {stage}
                   </span>
-                  <Badge variant="secondary" className="bg-slate-200/60 text-slate-700 font-bold shrink-0">
+                  <Badge variant="secondary" className="bg-slate-200/60 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold shrink-0">
                     {stageLeads.length}
                   </Badge>
                 </div>
@@ -464,7 +464,7 @@ function LeadsContent() {
                 {/* Cards Container */}
                 <div className="space-y-3 flex-1 overflow-y-auto pr-0.5">
                   {stageLeads.length === 0 ? (
-                    <div className="h-full border border-dashed border-slate-200 rounded-lg flex items-center justify-center text-[10px] text-slate-400 font-medium py-10 text-center">
+                    <div className="h-full border border-dashed border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-center text-[10px] text-slate-400 dark:text-slate-500 font-medium py-10 text-center">
                       Drag leads here
                     </div>
                   ) : (
@@ -474,10 +474,10 @@ function LeadsContent() {
                         draggable
                         onDragStart={(e) => handleDragStart(e, lead.id)}
                         onClick={() => handleViewLead(lead)}
-                        className="bg-white rounded-lg border border-slate-200/80 p-3.5 shadow-sm hover:shadow-md hover:border-slate-300 transition-all cursor-grab active:cursor-grabbing group relative space-y-2.5"
+                        className="bg-white dark:bg-slate-950 rounded-lg border border-slate-200/80 dark:border-slate-850 p-3.5 shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-750 transition-all cursor-grab active:cursor-grabbing group relative space-y-2.5"
                       >
                         <div className="flex items-start justify-between gap-1.5">
-                          <span className="font-mono font-bold text-[9px] text-slate-400 bg-slate-50 border border-slate-100 px-1 py-0.5 rounded">
+                          <span className="font-mono font-bold text-[9px] text-slate-450 dark:text-slate-500 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 px-1 py-0.5 rounded">
                             {lead.lead_id}
                           </span>
                           <Badge
@@ -489,25 +489,25 @@ function LeadsContent() {
                         </div>
                         
                         <div>
-                          <p className="text-xs font-bold text-slate-900 group-hover:text-blue-600 truncate leading-snug">
+                          <p className="text-xs font-bold text-slate-900 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate leading-snug">
                             {lead.company_name}
                           </p>
-                          <p className="text-[10px] text-slate-500 truncate mt-0.5">
+                          <p className="text-[10px] text-slate-500 dark:text-slate-450 truncate mt-0.5">
                             {lead.contact_person}
                           </p>
                         </div>
 
                         {lead.budget && (
-                          <div className="text-[10px] font-semibold text-slate-700 bg-slate-50 px-2 py-1 rounded flex items-center">
-                            <DollarSign className="h-3 w-3 text-slate-400 mr-0.5" />
+                          <div className="text-[10px] font-semibold text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 px-2 py-1 rounded flex items-center">
+                            <DollarSign className="h-3 w-3 text-slate-450 mr-0.5" />
                             <span>{lead.budget.toLocaleString()}</span>
                           </div>
                         )}
 
-                        <div className="flex items-center justify-between text-[9px] text-slate-400 pt-1 border-t border-slate-50">
+                        <div className="flex items-center justify-between text-[9px] text-slate-400 dark:text-slate-500 pt-1 border-t border-slate-50 dark:border-slate-850/80">
                           <span className="truncate">{lead.source}</span>
                           {lead.expected_closing_date && (
-                            <span className="shrink-0 font-medium text-slate-500">
+                            <span className="shrink-0 font-medium text-slate-500 dark:text-slate-400">
                               {new Date(lead.expected_closing_date).toLocaleDateString([], { month: "short", day: "numeric" })}
                             </span>
                           )}
@@ -538,12 +538,12 @@ function LeadsContent() {
           /* VIEW VIEW */
           <div className="space-y-5">
             <div className="space-y-1">
-              <span className="font-mono font-bold text-xs text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded">
+              <span className="font-mono font-bold text-xs text-slate-450 dark:text-slate-500 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-1.5 py-0.5 rounded">
                 {selectedLead?.lead_id}
               </span>
-              <h3 className="text-lg font-bold text-slate-900 mt-2">{selectedLead?.company_name}</h3>
-              <p className="text-sm text-slate-500 flex items-center">
-                Contact: <span className="font-semibold text-slate-700 ml-1">{selectedLead?.contact_person}</span>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-50 mt-2">{selectedLead?.company_name}</h3>
+              <p className="text-sm text-slate-550 dark:text-slate-400 flex items-center">
+                Contact: <span className="font-semibold text-slate-705 dark:text-slate-200 ml-1">{selectedLead?.contact_person}</span>
               </p>
               
               <div className="flex flex-wrap gap-2 pt-1.5">
