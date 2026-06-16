@@ -19,7 +19,17 @@ export async function loginAction(email: string, password: string) {
       .eq("email", email)
       .single();
 
-    if (error || !user) {
+    if (error) {
+      if (error.code === "PGRST205") {
+        return {
+          success: false,
+          error: "Database tables are not set up. Please copy the contents of 'schema.sql' in the project root and run it in your Supabase SQL Editor.",
+        };
+      }
+      return { success: false, error: "Invalid email or password." };
+    }
+
+    if (!user) {
       return { success: false, error: "Invalid email or password." };
     }
 

@@ -318,7 +318,7 @@ export default function ClientProfilePage({ params }: ClientProfileProps) {
                   <TableBody>
                     {proposals.map((prop: any) => (
                       <TableRow key={prop.id}>
-                        <TableCell className="align-middle font-mono font-bold text-xs text-slate-400">
+                        <TableCell className="align-middle font-mono font-bold text-xs text-slate-450">
                           {prop.proposal_number}
                         </TableCell>
                         <TableCell className="align-middle font-semibold text-slate-900">
