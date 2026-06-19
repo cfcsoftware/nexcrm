@@ -1,42 +1,61 @@
 "use server";
 
-import { supabaseAdmin } from "@/lib/supabase";
+import { query, Task } from "@/utils/db";
 import { revalidatePath } from "next/cache";
 
 export async function getTasksAction(search = "", statusFilter = "all", priorityFilter = "all") {
   try {
-    let query = supabaseAdmin.from("tasks").select("*", { count: "exact" });
+    let sql = "SELECT * FROM tasks";
+    const params: any[] = [];
+    const clauses: string[] = [];
 
     // 1. Apply Search
     if (search.trim()) {
-      query = query.ilike("title", `%${search.trim()}%`);
+      params.push(`%${search.trim()}%`);
+      clauses.push(`title ILIKE $${params.length}`);
     }
 
     // 2. Apply Status Filter
     if (statusFilter !== "all") {
-      query = query.eq("status", statusFilter);
+      params.push(statusFilter);
+      clauses.push(`status = $${params.length}`);
     }
 
     // 3. Apply Priority Filter
     if (priorityFilter !== "all") {
-      query = query.eq("priority", priorityFilter);
+      params.push(priorityFilter);
+      clauses.push(`priority = $${params.length}`);
     }
 
-    // Order by due date ascending
-    const { data: tasks, count, error } = await query.order("due_date", { ascending: true, nullsFirst: false });
+    if (clauses.length > 0) {
+      sql += " WHERE " + clauses.join(" AND ");
+    }
 
-    if (error) throw error;
+    // Order by due date ascending with nulls last
+    sql += " ORDER BY due_date ASC NULLS LAST";
+
+    const result = await query(sql, params);
+    const tasks: Task[] = result.rows || [];
+
+    // Calculate total matching criteria count
+    let countSql = "SELECT COUNT(*) FROM tasks";
+    if (clauses.length > 0) {
+      countSql += " WHERE " + clauses.join(" AND ");
+    }
+    const countRes = await query(countSql, params);
+    const count = parseInt(countRes.rows[0].count || "0", 10);
 
     // Calculate statistics
-    const { data: allTasks } = await supabaseAdmin.from("tasks").select("status");
-    const total = allTasks?.length || 0;
-    const completed = allTasks?.filter(t => t.status === "Completed").length || 0;
+    const allTasksRes = await query("SELECT status FROM tasks");
+    const allTasks = (allTasksRes.rows || []) as { status: string }[];
+    const total = allTasks.length || 0;
+    const completed = allTasks.filter(t => t.status === "Completed").length || 0;
     const pending = total - completed;
 
     return {
       success: true,
-      tasks: tasks || [],
-      count: count || 0,
+      tasks: tasks,
+      count: count,
       stats: { total, pending, completed }
     };
   } catch (error: any) {
@@ -57,21 +76,20 @@ export async function createTaskAction(data: {
       return { success: false, error: "Task title is required." };
     }
 
-    const { data: task, error } = await supabaseAdmin
-      .from("tasks")
-      .insert([
-        {
-          title: data.title.trim(),
-          description: data.description?.trim() || null,
-          due_date: data.due_date ? new Date(data.due_date).toISOString() : null,
-          priority: data.priority,
-          status: data.status,
-        },
-      ])
-      .select()
-      .single();
+    const insertSql = `
+      INSERT INTO tasks (title, description, due_date, priority, status)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *
+    `;
+    const result = await query(insertSql, [
+      data.title.trim(),
+      data.description?.trim() || null,
+      data.due_date ? new Date(data.due_date).toISOString() : null,
+      data.priority,
+      data.status,
+    ]);
 
-    if (error) throw error;
+    const task = result.rows[0];
 
     revalidatePath("/tasks");
     revalidatePath("/dashboard");
@@ -96,21 +114,28 @@ export async function updateTaskAction(
     if (!id) return { success: false, error: "Task ID is required." };
     if (!data.title.trim()) return { success: false, error: "Task title is required." };
 
-    const { data: task, error } = await supabaseAdmin
-      .from("tasks")
-      .update({
-        title: data.title.trim(),
-        description: data.description?.trim() || null,
-        due_date: data.due_date ? new Date(data.due_date).toISOString() : null,
-        priority: data.priority,
-        status: data.status,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id)
-      .select()
-      .single();
+    const updateSql = `
+      UPDATE tasks SET
+        title = $1,
+        description = $2,
+        due_date = $3,
+        priority = $4,
+        status = $5,
+        updated_at = NOW()
+      WHERE id = $6
+      RETURNING *
+    `;
+    const result = await query(updateSql, [
+      data.title.trim(),
+      data.description?.trim() || null,
+      data.due_date ? new Date(data.due_date).toISOString() : null,
+      data.priority,
+      data.status,
+      id,
+    ]);
 
-    if (error) throw error;
+    const task = result.rows[0];
+    if (!task) throw new Error("Task not found or could not be updated.");
 
     revalidatePath("/tasks");
     revalidatePath("/dashboard");
@@ -125,9 +150,7 @@ export async function deleteTaskAction(id: string) {
   try {
     if (!id) return { success: false, error: "Task ID is required." };
 
-    const { error } = await supabaseAdmin.from("tasks").delete().eq("id", id);
-
-    if (error) throw error;
+    await query("DELETE FROM tasks WHERE id = $1", [id]);
 
     revalidatePath("/tasks");
     revalidatePath("/dashboard");
@@ -144,17 +167,13 @@ export async function toggleTaskCompleteAction(id: string, currentStatus: string
 
     const newStatus = currentStatus === "Completed" ? "Pending" : "Completed";
 
-    const { data: task, error } = await supabaseAdmin
-      .from("tasks")
-      .update({
-        status: newStatus,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id)
-      .select()
-      .single();
+    const result = await query(
+      "UPDATE tasks SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *",
+      [newStatus, id]
+    );
 
-    if (error) throw error;
+    const task = result.rows[0];
+    if (!task) throw new Error("Task not found or could not be updated.");
 
     revalidatePath("/tasks");
     revalidatePath("/dashboard");

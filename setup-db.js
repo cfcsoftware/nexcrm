@@ -3,12 +3,32 @@ const fs = require('fs');
 const path = require('path');
 
 async function run() {
-  const connectionString = 'postgresql://postgres:Nexion%40%232026@db.ijxjdmofwzrvfeceyimh.supabase.co:5432/postgres';
+  let connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    try {
+      const envPath = path.join(__dirname, '.env');
+      if (fs.existsSync(envPath)) {
+        const envContent = fs.readFileSync(envPath, 'utf8');
+        const match = envContent.match(/DATABASE_URL\s*=\s*([^\r\n]+)/);
+        if (match) {
+          connectionString = match[1].trim();
+        }
+      }
+    } catch (e) {
+      console.warn('Could not read .env file directly:', e);
+    }
+  }
+  
+  if (!connectionString) {
+    connectionString = 'postgresql://postgres:1234@localhost:5432/crm_db';
+  }
+
+  console.log(`Connecting to database: ${connectionString.replace(/:([^@]+)@/, ':****@')}`);
   const client = new Client({
     connectionString: connectionString,
-    ssl: {
-      rejectUnauthorized: false
-    }
+    ssl: connectionString.includes('supabase.co') || connectionString.includes('render.com') || process.env.NODE_ENV === 'production'
+      ? { rejectUnauthorized: false }
+      : undefined
   });
 
   try {

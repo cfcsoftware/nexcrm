@@ -1,54 +1,43 @@
 "use server";
 
-import { supabaseAdmin } from "@/lib/supabase";
+import { query } from "@/utils/db";
 
-export async function globalSearchAction(query: string) {
+export async function globalSearchAction(searchQuery: string) {
   try {
-    if (!query || query.trim().length < 2) {
+    if (!searchQuery || searchQuery.trim().length < 2) {
       return { success: true, results: { leads: [], clients: [], proposals: [], tasks: [] } };
     }
 
-    const cleanQuery = query.trim();
+    const cleanQuery = searchQuery.trim();
+    const queryPattern = `%${cleanQuery}%`;
 
-    // 1. Search Leads
-    const { data: leads, error: leadErr } = await supabaseAdmin
-      .from("leads")
-      .select("id, lead_id, company_name, contact_person")
-      .or(`company_name.ilike.%${cleanQuery}%,contact_person.ilike.%${cleanQuery}%,lead_id.ilike.%${cleanQuery}%`)
-      .limit(5);
-
-    // 2. Search Clients
-    const { data: clients, error: clientErr } = await supabaseAdmin
-      .from("clients")
-      .select("id, client_id, company_name, contact_person")
-      .or(`company_name.ilike.%${cleanQuery}%,contact_person.ilike.%${cleanQuery}%,client_id.ilike.%${cleanQuery}%`)
-      .limit(5);
-
-    // 3. Search Proposals
-    const { data: proposals, error: propErr } = await supabaseAdmin
-      .from("proposals")
-      .select("id, proposal_number, title")
-      .or(`proposal_number.ilike.%${cleanQuery}%,title.ilike.%${cleanQuery}%`)
-      .limit(5);
-
-    // 4. Search Tasks
-    const { data: tasks, error: taskErr } = await supabaseAdmin
-      .from("tasks")
-      .select("id, title, status")
-      .ilike("title", `%${cleanQuery}%`)
-      .limit(5);
-
-    if (leadErr || clientErr || propErr || taskErr) {
-      console.error("Search error:", { leadErr, clientErr, propErr, taskErr });
-    }
+    // Perform queries in parallel
+    const [leadsRes, clientsRes, proposalsRes, tasksRes] = await Promise.all([
+      query(
+        "SELECT id, lead_id, company_name, contact_person FROM leads WHERE company_name ILIKE $1 OR contact_person ILIKE $1 OR lead_id ILIKE $1 LIMIT 5",
+        [queryPattern]
+      ),
+      query(
+        "SELECT id, client_id, company_name, contact_person FROM clients WHERE company_name ILIKE $1 OR contact_person ILIKE $1 OR client_id ILIKE $1 LIMIT 5",
+        [queryPattern]
+      ),
+      query(
+        "SELECT id, proposal_number, title FROM proposals WHERE proposal_number ILIKE $1 OR title ILIKE $1 LIMIT 5",
+        [queryPattern]
+      ),
+      query(
+        "SELECT id, title, status FROM tasks WHERE title ILIKE $1 LIMIT 5",
+        [queryPattern]
+      ),
+    ]);
 
     return {
       success: true,
       results: {
-        leads: leads || [],
-        clients: clients || [],
-        proposals: proposals || [],
-        tasks: tasks || [],
+        leads: leadsRes.rows || [],
+        clients: clientsRes.rows || [],
+        proposals: proposalsRes.rows || [],
+        tasks: tasksRes.rows || [],
       },
     };
   } catch (error) {

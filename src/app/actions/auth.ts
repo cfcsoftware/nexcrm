@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { supabaseAdmin } from "@/lib/supabase";
+import { query } from "@/utils/db";
 import { encrypt } from "@/lib/auth";
 import * as bcrypt from "bcryptjs";
 
@@ -12,22 +12,9 @@ export async function loginAction(email: string, password: string) {
       return { success: false, error: "Please enter email and password." };
     }
 
-    // 1. Fetch user from Supabase using Admin client (bypassing RLS on users table)
-    const { data: user, error } = await supabaseAdmin
-      .from("users")
-      .select("*")
-      .eq("email", email)
-      .single();
-
-    if (error) {
-      if (error.code === "PGRST205") {
-        return {
-          success: false,
-          error: "Database tables are not set up. Please copy the contents of 'schema.sql' in the project root and run it in your Supabase SQL Editor.",
-        };
-      }
-      return { success: false, error: "Invalid email or password." };
-    }
+    // 1. Fetch user from database
+    const result = await query("SELECT * FROM users WHERE email = $1", [email]);
+    const user = result.rows[0];
 
     if (!user) {
       return { success: false, error: "Invalid email or password." };
@@ -61,6 +48,12 @@ export async function loginAction(email: string, password: string) {
     return { success: true };
   } catch (err: any) {
     console.error("Login action error:", err);
+    if (err.code === "42P01") {
+      return {
+        success: false,
+        error: "Database tables are not set up. Please run the database setup script 'node setup-db.js' at the project root.",
+      };
+    }
     return { success: false, error: "An unexpected error occurred. Please try again." };
   }
 }

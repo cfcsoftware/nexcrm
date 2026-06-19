@@ -90,11 +90,11 @@ CREATE TABLE proposals (
 -- SEED DATA INSERTS
 -- =========================================================================
 
--- 1. Insert User (admin@crm.com / admin123)
+-- 1. Insert User (admin@crm.com / 123456)
 INSERT INTO users (id, email, password, name) VALUES (
     'e3b0c442-98fc-1c14-9afb-f3c9e9b3d1f1',
     'admin@crm.com',
-    '$2b$10$lev0hdArylY/w27Fa19Fwe4ZpSlorXhcX3DYVQRuEgD0jdKf1g4IK',
+    '$2b$10$A9Al394RR1vTiYJeuk8mWuQA1hyKquG84y2vxBnCsjDNs.Zplv4AO',
     'Admin User'
 );
 

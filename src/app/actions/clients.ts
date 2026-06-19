@@ -1,28 +1,35 @@
 "use server";
 
-import { supabaseAdmin } from "@/lib/supabase";
+import { query } from "@/utils/db";
 import { revalidatePath } from "next/cache";
 
 export async function getClientsAction(search = "") {
   try {
-    let query = supabaseAdmin.from("clients").select("*", { count: "exact" });
+    let sql = "SELECT * FROM clients";
+    const params: any[] = [];
 
-    // Apply Search (searches company, contact, email, client_id)
     if (search.trim()) {
-      const cleanSearch = search.trim();
-      query = query.or(
-        `company_name.ilike.%${cleanSearch}%,contact_person.ilike.%${cleanSearch}%,email.ilike.%${cleanSearch}%,client_id.ilike.%${cleanSearch}%`
-      );
+      sql += " WHERE company_name ILIKE $1 OR contact_person ILIKE $1 OR email ILIKE $1 OR client_id ILIKE $1";
+      params.push(`%${search.trim()}%`);
     }
 
-    const { data: clients, count, error } = await query.order("company_name", { ascending: true });
+    sql += " ORDER BY company_name ASC";
 
-    if (error) throw error;
+    const result = await query(sql, params);
+    const clients = result.rows || [];
+
+    // Fetch total count
+    let countSql = "SELECT COUNT(*) FROM clients";
+    if (search.trim()) {
+      countSql += " WHERE company_name ILIKE $1 OR contact_person ILIKE $1 OR email ILIKE $1 OR client_id ILIKE $1";
+    }
+    const countResult = await query(countSql, params);
+    const count = parseInt(countResult.rows[0].count || "0", 10);
 
     return {
       success: true,
-      clients: clients || [],
-      count: count || 0,
+      clients: clients,
+      count: count,
     };
   } catch (error: any) {
     console.error("Fetch clients error:", error);
@@ -47,10 +54,10 @@ export async function createClientAction(data: {
     }
 
     // Generate Client ID (CLI-XXXX)
-    const { data: allClients } = await supabaseAdmin.from("clients").select("client_id");
+    const allClients = await query("SELECT client_id FROM clients");
     let nextNum = 1001;
-    if (allClients && allClients.length > 0) {
-      const nums = allClients
+    if (allClients.rows && allClients.rows.length > 0) {
+      const nums = (allClients.rows as { client_id: string }[])
         .map((c) => {
           const match = c.client_id.match(/CLI-(\d+)/);
           return match ? parseInt(match[1]) : 1000;
@@ -62,26 +69,26 @@ export async function createClientAction(data: {
     }
     const newClientId = `CLI-${nextNum}`;
 
-    const { data: client, error } = await supabaseAdmin
-      .from("clients")
-      .insert([
-        {
-          client_id: newClientId,
-          company_name: data.company_name.trim(),
-          contact_person: data.contact_person.trim(),
-          mobile: data.mobile.trim(),
-          email: data.email.trim(),
-          address: data.address?.trim() || null,
-          city: data.city?.trim() || null,
-          state: data.state?.trim() || null,
-          gst_number: data.gst_number?.trim() || null,
-          notes: data.notes?.trim() || null,
-        },
-      ])
-      .select()
-      .single();
+    const insertSql = `
+      INSERT INTO clients (
+        client_id, company_name, contact_person, mobile, email, address, city, state, gst_number, notes
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      RETURNING *
+    `;
+    const result = await query(insertSql, [
+      newClientId,
+      data.company_name.trim(),
+      data.contact_person.trim(),
+      data.mobile.trim(),
+      data.email.trim(),
+      data.address?.trim() || null,
+      data.city?.trim() || null,
+      data.state?.trim() || null,
+      data.gst_number?.trim() || null,
+      data.notes?.trim() || null,
+    ]);
 
-    if (error) throw error;
+    const client = result.rows[0];
 
     revalidatePath("/clients");
     revalidatePath("/dashboard");
@@ -112,25 +119,36 @@ export async function updateClientAction(
       return { success: false, error: "Company name and contact person are required." };
     }
 
-    const { data: client, error } = await supabaseAdmin
-      .from("clients")
-      .update({
-        company_name: data.company_name.trim(),
-        contact_person: data.contact_person.trim(),
-        mobile: data.mobile.trim(),
-        email: data.email.trim(),
-        address: data.address?.trim() || null,
-        city: data.city?.trim() || null,
-        state: data.state?.trim() || null,
-        gst_number: data.gst_number?.trim() || null,
-        notes: data.notes?.trim() || null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id)
-      .select()
-      .single();
+    const updateSql = `
+      UPDATE clients SET
+        company_name = $1,
+        contact_person = $2,
+        mobile = $3,
+        email = $4,
+        address = $5,
+        city = $6,
+        state = $7,
+        gst_number = $8,
+        notes = $9,
+        updated_at = NOW()
+      WHERE id = $10
+      RETURNING *
+    `;
+    const result = await query(updateSql, [
+      data.company_name.trim(),
+      data.contact_person.trim(),
+      data.mobile.trim(),
+      data.email.trim(),
+      data.address?.trim() || null,
+      data.city?.trim() || null,
+      data.state?.trim() || null,
+      data.gst_number?.trim() || null,
+      data.notes?.trim() || null,
+      id,
+    ]);
 
-    if (error) throw error;
+    const client = result.rows[0];
+    if (!client) throw new Error("Client not found or could not be updated.");
 
     revalidatePath("/clients");
     revalidatePath(`/clients/${id}`);
@@ -146,9 +164,7 @@ export async function deleteClientAction(id: string) {
   try {
     if (!id) return { success: false, error: "Client ID is required." };
 
-    const { error } = await supabaseAdmin.from("clients").delete().eq("id", id);
-
-    if (error) throw error;
+    const result = await query("DELETE FROM clients WHERE id = $1", [id]);
 
     revalidatePath("/clients");
     revalidatePath("/dashboard");
@@ -164,33 +180,28 @@ export async function getClientProfileDataAction(id: string) {
     if (!id) return { success: false, error: "Client ID is required." };
 
     // 1. Fetch Client profile details
-    const { data: client, error: clientErr } = await supabaseAdmin
-      .from("clients")
-      .select("*")
-      .eq("id", id)
-      .single();
+    const clientRes = await query("SELECT * FROM clients WHERE id = $1", [id]);
+    const client = clientRes.rows[0];
 
-    if (clientErr || !client) throw clientErr || new Error("Client not found.");
+    if (!client) throw new Error("Client not found.");
 
     // 2. Fetch related Leads
-    const { data: leads } = await supabaseAdmin
-      .from("leads")
-      .select("id, lead_id, company_name, contact_person, stage, status, created_at")
-      .eq("client_id", id)
-      .order("created_at", { ascending: false });
+    const leadsRes = await query(
+      "SELECT id, lead_id, company_name, contact_person, stage, status, created_at FROM leads WHERE client_id = $1 ORDER BY created_at DESC",
+      [id]
+    );
 
     // 3. Fetch related Proposals
-    const { data: proposals } = await supabaseAdmin
-      .from("proposals")
-      .select("id, proposal_number, title, value, proposal_date, status")
-      .eq("client_id", id)
-      .order("proposal_date", { ascending: false });
+    const proposalsRes = await query(
+      "SELECT id, proposal_number, title, value, proposal_date, status FROM proposals WHERE client_id = $1 ORDER BY proposal_date DESC",
+      [id]
+    );
 
     return {
       success: true,
       client,
-      leads: leads || [],
-      proposals: proposals || [],
+      leads: leadsRes.rows || [],
+      proposals: proposalsRes.rows || [],
     };
   } catch (error: any) {
     console.error("Fetch client profile error:", error);
@@ -202,17 +213,13 @@ export async function updateClientNotesAction(id: string, notes: string) {
   try {
     if (!id) return { success: false, error: "Client ID is required." };
 
-    const { data: client, error } = await supabaseAdmin
-      .from("clients")
-      .update({
-        notes: notes.trim(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id)
-      .select()
-      .single();
+    const result = await query(
+      "UPDATE clients SET notes = $1, updated_at = NOW() WHERE id = $2 RETURNING *",
+      [notes.trim(), id]
+    );
+    const client = result.rows[0];
 
-    if (error) throw error;
+    if (!client) throw new Error("Client not found.");
 
     revalidatePath(`/clients/${id}`);
     return { success: true, notes: client.notes };

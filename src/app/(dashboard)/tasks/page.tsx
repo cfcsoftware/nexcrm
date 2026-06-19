@@ -77,7 +77,9 @@ function TasksContent() {
       const res = await getTasksAction(search, statusFilter, priorityFilter);
       if (res.success && res.tasks) {
         setTasks(res.tasks);
-        setStats(res.stats);
+        if (res.stats) {
+          setStats(res.stats);
+        }
         
         // If queryId is in URL, open the task detail view
         if (queryId) {

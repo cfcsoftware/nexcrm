@@ -94,7 +94,9 @@ function ProposalsContent() {
       const res = await getProposalsAction(search, statusFilter);
       if (res.success && res.proposals) {
         setProposals(res.proposals);
-        setStats(res.stats);
+        if (res.stats) {
+          setStats(res.stats);
+        }
 
         // If queryId is in URL, open the proposal detail view
         if (queryId) {
