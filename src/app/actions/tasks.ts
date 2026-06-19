@@ -1,6 +1,6 @@
 "use server";
 
-import { query, Task } from "@/utils/db";
+import { query, Task, parseDate } from "@/utils/db";
 import { revalidatePath } from "next/cache";
 
 export async function getTasksAction(search = "", statusFilter = "all", priorityFilter = "all") {
@@ -84,7 +84,7 @@ export async function createTaskAction(data: {
     const result = await query(insertSql, [
       data.title.trim(),
       data.description?.trim() || null,
-      data.due_date ? new Date(data.due_date).toISOString() : null,
+      parseDate(data.due_date),
       data.priority,
       data.status,
     ]);
@@ -128,7 +128,7 @@ export async function updateTaskAction(
     const result = await query(updateSql, [
       data.title.trim(),
       data.description?.trim() || null,
-      data.due_date ? new Date(data.due_date).toISOString() : null,
+      parseDate(data.due_date),
       data.priority,
       data.status,
       id,

@@ -158,8 +158,8 @@ function ProposalsContent() {
     setFormTitle(prop.title);
     setFormClientId(prop.client_id || "");
     setFormLeadId(prop.lead_id || "");
-    setFormPropDate(prop.proposal_date ? prop.proposal_date.substring(0, 10) : "");
-    setFormExpiryDate(prop.expiry_date ? prop.expiry_date.substring(0, 10) : "");
+    setFormPropDate(prop.proposal_date ? new Date(prop.proposal_date).toISOString().substring(0, 10) : "");
+    setFormExpiryDate(prop.expiry_date ? new Date(prop.expiry_date).toISOString().substring(0, 10) : "");
     setFormValue(prop.value ? prop.value.toString() : "");
     setFormDesc(prop.description || "");
     setFormStatus(prop.status);

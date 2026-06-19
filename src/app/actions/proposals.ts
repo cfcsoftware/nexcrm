@@ -1,6 +1,6 @@
 "use server";
 
-import { query, Proposal, Client, Lead } from "@/utils/db";
+import { query, Proposal, Client, Lead, parseDate } from "@/utils/db";
 import { revalidatePath } from "next/cache";
 
 export interface ProposalWithRelations extends Proposal {
@@ -250,8 +250,8 @@ export async function createProposalAction(data: {
       data.title.trim(),
       data.client_id,
       data.lead_id || null,
-      new Date(data.proposal_date).toISOString(),
-      data.expiry_date ? new Date(data.expiry_date).toISOString() : null,
+      parseDate(data.proposal_date) || new Date().toISOString(),
+      parseDate(data.expiry_date),
       data.value,
       data.description?.trim() || null,
       data.status,
@@ -306,8 +306,8 @@ export async function updateProposalAction(
       data.title.trim(),
       data.client_id,
       data.lead_id || null,
-      new Date(data.proposal_date).toISOString(),
-      data.expiry_date ? new Date(data.expiry_date).toISOString() : null,
+      parseDate(data.proposal_date) || new Date().toISOString(),
+      parseDate(data.expiry_date),
       data.value,
       data.description?.trim() || null,
       data.status,

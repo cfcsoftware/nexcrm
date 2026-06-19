@@ -46,7 +46,7 @@ import {
   Link2,
 } from "lucide-react";
 
-const STAGES = ["Enquiry", "Contacted", "Qualified", "Proposal Sent", "Negotiation", "Completed"];
+const STAGES = ["Enquiry", "Contacted", "Qualified", "Proposal Sent", "Negotiation", "Completed", "Won", "Lost"];
 
 function LeadsContent() {
   const searchParams = useSearchParams();
@@ -152,9 +152,9 @@ function LeadsContent() {
     setFormSource(lead.source);
     setFormRequirement(lead.requirement || "");
     setFormBudget(lead.budget ? lead.budget.toString() : "");
-    setFormClosingDate(lead.expected_closing_date ? lead.expected_closing_date.substring(0, 10) : "");
+    setFormClosingDate(lead.expected_closing_date ? new Date(lead.expected_closing_date).toISOString().substring(0, 10) : "");
     setFormNotes(lead.notes || "");
-    setFormAssignedDate(lead.assigned_date ? lead.assigned_date.substring(0, 10) : "");
+    setFormAssignedDate(lead.assigned_date ? new Date(lead.assigned_date).toISOString().substring(0, 10) : "");
     setFormStage(lead.stage);
     setFormStatus(lead.status);
     setFormError(null);
@@ -437,7 +437,7 @@ function LeadsContent() {
         /* =========================================================
            KANBAN VIEW (6 Stage Columns)
            ========================================================= */
-        <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-4 items-start overflow-x-auto pb-4">
+        <div className="flex flex-row gap-4 items-start overflow-x-auto pb-4 w-full">
           {STAGES.map((stage) => {
             const stageLeads = leads.filter((l) => l.stage === stage);
             const isDraggingOver = dragOverStage === stage;
@@ -447,7 +447,7 @@ function LeadsContent() {
                 onDragOver={(e) => handleDragOver(e, stage)}
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, stage)}
-                className={`flex flex-col bg-slate-100 dark:bg-slate-900/60 rounded-xl p-3 border-2 min-h-[500px] max-h-[80vh] w-full shrink-0 transition-all ${
+                className={`flex flex-col bg-slate-100 dark:bg-slate-900/60 rounded-xl p-3 border-2 min-h-[500px] max-h-[80vh] w-56 shrink-0 transition-all ${
                   isDraggingOver ? "border-dashed border-blue-500 bg-blue-500/10 dark:bg-blue-950/20 shadow-inner" : "border-transparent"
                 }`}
               >

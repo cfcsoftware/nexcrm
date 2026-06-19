@@ -12,11 +12,35 @@ export const pool = new Pool({
       : undefined,
 });
 
+export function formatDates(obj: any): any {
+  if (obj === null || obj === undefined) return obj;
+  if (obj instanceof Date) return obj.toISOString();
+  if (Array.isArray(obj)) return obj.map(formatDates);
+  if (typeof obj === "object") {
+    const newObj: any = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        newObj[key] = formatDates(obj[key]);
+      }
+    }
+    return newObj;
+  }
+  return obj;
+}
+
+export function parseDate(dStr: any): string | null {
+  if (!dStr) return null;
+  const parsed = new Date(dStr);
+  return isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
 export async function query<T extends QueryResultRow = any>(
   text: string,
   params?: any[]
 ) {
-  return pool.query<T>(text, params);
+  const res = await pool.query<T>(text, params);
+  res.rows = formatDates(res.rows);
+  return res;
 }
 
 // Database Table Interfaces

@@ -1,6 +1,6 @@
 "use server";
 
-import { query, Lead } from "@/utils/db";
+import { query, Lead, parseDate } from "@/utils/db";
 import { revalidatePath } from "next/cache";
 
 export interface LeadWithClient extends Lead {
@@ -221,9 +221,9 @@ export async function createLeadAction(data: {
       data.source,
       data.requirement?.trim() || null,
       data.budget || null,
-      data.expected_closing_date ? new Date(data.expected_closing_date).toISOString() : null,
+      parseDate(data.expected_closing_date),
       data.notes?.trim() || null,
-      data.assigned_date ? new Date(data.assigned_date).toISOString() : null,
+      parseDate(data.assigned_date),
       data.stage,
       data.status,
     ]);
@@ -301,9 +301,9 @@ export async function updateLeadAction(
       data.source,
       data.requirement?.trim() || null,
       data.budget || null,
-      data.expected_closing_date ? new Date(data.expected_closing_date).toISOString() : null,
+      parseDate(data.expected_closing_date),
       data.notes?.trim() || null,
-      data.assigned_date ? new Date(data.assigned_date).toISOString() : null,
+      parseDate(data.assigned_date),
       data.stage,
       data.status,
       id,
@@ -330,8 +330,13 @@ export async function updateLeadStageAction(id: string, newStage: string) {
   try {
     if (!id) return { success: false, error: "Lead ID is required." };
 
-    // If stage becomes Completed, we set status to Won automatically
-    const statusUpdate = newStage === "Completed" ? "Won" : "Active";
+    // If stage becomes Completed or Won, we set status to Won automatically. If Lost, we set status to Lost.
+    let statusUpdate = "Active";
+    if (newStage === "Completed" || newStage === "Won") {
+      statusUpdate = "Won";
+    } else if (newStage === "Lost") {
+      statusUpdate = "Lost";
+    }
 
     const result = await query(
       "UPDATE leads SET stage = $1, status = $2, updated_at = NOW() WHERE id = $3 RETURNING *",
@@ -340,7 +345,7 @@ export async function updateLeadStageAction(id: string, newStage: string) {
     const lead = result.rows[0];
 
     // Trigger client conversion
-    if (newStage === "Completed") {
+    if (newStage === "Completed" || newStage === "Won") {
       await checkAndConvertToClient(lead.id, newStage, statusUpdate);
     }
 

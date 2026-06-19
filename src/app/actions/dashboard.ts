@@ -34,7 +34,7 @@ export async function getDashboardData() {
     const leadsByStageRes = await query("SELECT stage FROM leads");
     const leadsByStage = (leadsByStageRes.rows || []) as { stage: string }[];
     
-    const stages = ["Enquiry", "Contacted", "Qualified", "Proposal Sent", "Negotiation", "Completed"];
+    const stages = ["Enquiry", "Contacted", "Qualified", "Proposal Sent", "Negotiation", "Completed", "Won", "Lost"];
     const pipelineData = stages.map(stage => {
       const count = leadsByStage.filter(l => l.stage === stage).length || 0;
       return { name: stage, value: count };

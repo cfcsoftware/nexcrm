@@ -120,7 +120,7 @@ function TasksContent() {
     setSelectedTask(task);
     setFormTitle(task.title);
     setFormDesc(task.description || "");
-    setFormDueDate(task.due_date ? task.due_date.substring(0, 10) : "");
+    setFormDueDate(task.due_date ? new Date(task.due_date).toISOString().substring(0, 10) : "");
     setFormPriority(task.priority);
     setFormStatus(task.status);
     setFormError(null);
