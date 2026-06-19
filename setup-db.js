@@ -25,11 +25,9 @@ async function run() {
 
   console.log(`Connecting to database: ${connectionString.replace(/:([^@]+)@/, ':****@')}`);
   const client = new Client({
-    connectionString: connectionString,
-    ssl: connectionString.includes('supabase.co') || connectionString.includes('render.com') || process.env.NODE_ENV === 'production'
-      ? { rejectUnauthorized: false }
-      : undefined
-  });
+  connectionString,
+  ssl: false
+});
 
   try {
     console.log('Connecting to Supabase PostgreSQL database...');
